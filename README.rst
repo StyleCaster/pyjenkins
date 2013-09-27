@@ -1,5 +1,5 @@
 ===============================
-Jenkins
+PyJenkins
 ===============================
 
 Python wrapper around the Jenkins JSON API
@@ -16,12 +16,12 @@ Query Jenkins jobs and builds, and trigger a build.
 Installation
 ------------
 
-    pip install python-jenkins
+    pip install pyjenkins
 
 Usage
 -----
 
-    >>> from jenkins import Jenkins
+    >>> from pyjenkins import Jenkins
     >>> jenkins = Jenkins("http://jenkins.example.com/", 'username', 'password')
     >>> job = jenkins.get_job_by_name('my-job')
     >>> build = job.build('auth-token')

@@ -39,9 +39,9 @@ coverage:
 	open htmlcov/index.html
 
 docs:
-	rm -f docs/jenkins.rst
+	rm -f docs/pyjenkins.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ jenkins
+	sphinx-apidoc -o docs/ pyjenkins
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
