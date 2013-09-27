@@ -10,7 +10,7 @@ Tests for `jenkins` module.
 
 import unittest
 
-from jenkins import jenkins
+from pyjenkins import jenkins
 
 
 class TestJenkins(unittest.TestCase):

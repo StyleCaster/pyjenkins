@@ -5,7 +5,7 @@ PyJenkins
 Python wrapper around the Jenkins JSON API
 
 * Free software: MIT license
-* Documentation: http://jenkins.rtfd.org.
+* Documentation: http://pyjenkins.rtfd.org.
 
 Features
 --------

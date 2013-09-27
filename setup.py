@@ -18,17 +18,17 @@ readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
-    name='python-jenkins',
+    name='pyjenkins',
     version='0.1.0',
     description='Python wrapper around the Jenkins JSON API',
     long_description=readme + '\n\n' + history,
     author='Chris Lawlor',
     author_email='chris.lawlor@stylecaster.com',
-    url='https://github.com/stylecaster/python-jenkins',
+    url='https://github.com/stylecaster/pyjenkins',
     packages=[
-        'jenkins',
+        'pyjenkins',
     ],
-    package_dir={'jenkins': 'jenkins'},
+    package_dir={'pyjenkins': 'pyjenkins'},
     include_package_data=True,
     install_requires=[
         'requests >= 2.0.0'
