@@ -13,6 +13,6 @@ Or, if you have virtualenvwrapper installed::
 
 Or, install from the repository::
 
-    $ git clone git@github.com:stylecaster/python-jenkins.git
+    $ git clone git@github.com:stylecaster/pyjenkins.git
     $ pip install -r requirements.txt
     $ python setup.py install

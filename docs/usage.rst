@@ -4,7 +4,7 @@ Usage
 
 To use Jenkins in a project::
 
-	>>> from jenkins import Jenkins
+	>>> from pyjenkins import Jenkins
 
 	>>> # username and password optional
 	>>> jenkins = Jenkins('https://jenkins.example.com/', 'username', 'password')
