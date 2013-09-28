@@ -46,6 +46,9 @@ class Jenkins(object):
         self._auth = auth
         self._load_data()
 
+    def __repr__(self):
+        return "<Jenkins {0}>".format(self.url)
+
     def _load_data(self):
         data = _requests_get(self._endpoint, self._auth)
         self.job_summaries = [JobSummary(**kwargs)
@@ -93,6 +96,9 @@ class Job(object):
         self._endpoint = _get_json_api_url(url)
         self._auth = auth
         self._load_data()
+
+    def __repr__(self):
+        return "<Job {0}>".format(self.name)
 
     def build(self, token):
         """
