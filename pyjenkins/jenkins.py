@@ -54,7 +54,7 @@ class Jenkins(object):
 
     def _load_data(self):
         data = _requests_get(self._endpoint, self._auth)
-        self.job_summaries = [JobSummary(**kwargs)
+        self.job_summaries = [JobSummary(auth=self._auth, **kwargs)
                               for kwargs in data.get('jobs', [])]
 
     def get_job(self, job_summary):
@@ -79,15 +79,19 @@ class JobSummary(object):
     """
     Limited information about a job.
     """
-    def __init__(self, name=None, url=None, color=None):
+    def __init__(self, name=None, url=None, color=None, auth=None):
         if name is None or url is None or color is None:
             raise AttributeError("JobSummary missing required kwargs")
         self.name = name
         self.url = url
         self.color = color
+        self._auth = auth
 
     def __repr__(self):
         return "<JobSummary {0}>".format(self.name)
+
+    def get_job(self):
+        return Job(self.url, auth=self._auth)
 
 
 class Job(object):
@@ -124,7 +128,6 @@ class Job(object):
         self.description = data.get('description')
         self.name = data.get('displayName')
         self.url = data.get('url')
-        self._build_urls = data.get('builds', [])
         self.color = data.get('color')
         self._in_queue = data.get('inQueue', False)
         health_report = data.get('healthReport', [])
@@ -133,9 +136,8 @@ class Job(object):
         else:
             self.health_report = None
         self._raw_data = data
-        self._builds = data.get('builds', [])
         self.next_build_number = data.get('nextBuildNumber')
-        self.build_summaries = [BuildSummary(**kwargs)
+        self.build_summaries = [BuildSummary(auth=self._auth, **kwargs)
                                 for kwargs in data.get('builds', [])]
 
     def get_build(self, build_summary):
@@ -143,14 +145,18 @@ class Job(object):
 
 
 class BuildSummary(object):
-    def __init__(self, number=None, url=None):
+    def __init__(self, number=None, url=None, auth=None):
         if number is None or url is None:
             raise AttributeError("Cannot init a Build without url and number")
         self.url = url
         self.number = number
+        self._auth = auth
 
     def __repr__(self):
         return "<BuildSummary for Build {0}>".format(self.number)
+
+    def get_build(self):
+        return Build(self.url, auth=self._auth)
 
 
 class Build(object):
@@ -161,10 +167,10 @@ class Build(object):
         self._endpoint = _get_json_api_url(url)
         self._auth = auth
         self.number = None
-        self._load_data()
         self.started = False
         self.successful = False
         self.complete = False
+        self._load_data()
 
     def __repr__(self):
         return "<Build {0}>".format(self.number)

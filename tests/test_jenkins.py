@@ -16,7 +16,8 @@ try:
 except ImportError:
     from unittest.mock import patch
 
-from pyjenkins import Jenkins
+from pyjenkins import Jenkins, Job, Build
+from pyjenkins.jenkins import JobSummary, BuildSummary
 from pyjenkins.jenkins import _get_json_api_url
 
 
@@ -91,6 +92,69 @@ class TestJenkins(RequestMockMixin, unittest.TestCase):
 
     def tearDown(self):
         pass
+
+
+class TestJob(RequestMockMixin, unittest.TestCase):
+    def setUp(self):
+        self.test_data = {
+            'description': 'A test job',
+            'displayName': 'Test Job',
+            'url': 'http://example.com/test-job',
+            'builds': [],
+            'color': 'blue',
+            'inQueue': False,
+            'healthReport': [],
+            'nextBuildNumber': 1
+        }
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_job_init(self, requests):
+        self.setup_response(requests, self.test_data)
+        job = Job('http://example.com/test-job')
+        self.assertEqual(len(job.build_summaries), 0)
+        self.assertEqual('blue', job.color)
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_get_job_from_summary(self, requests):
+        self.setup_response(requests, self.test_data)
+        summary = JobSummary(name='Test Job',
+                             url='http://example.com/test-job',
+                             color='blue')
+        job = summary.get_job()
+        self.assertEqual(len(job.build_summaries), 0)
+        self.assertEqual('blue', job.color)
+
+
+class TestBuild(RequestMockMixin, unittest.TestCase):
+    def setUp(self):
+        self.test_data = {
+            'result': 'SUCCESS',
+            'building': False,
+            'id': '1234-5678-9',
+            'number': 1,
+            'estimatedDuration': 60000,
+            'duration': 60100,
+            'actions': [],
+        }
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_build_init(self, requests):
+        self.setup_response(requests, self.test_data)
+        build = Build('http://example.com/test-job/1')
+        self.assertEqual(build.started, True)
+        self.assertEqual(build.complete, True)
+        self.assertEqual(build.duration, 60100)
+        self.assertEqual(build.estimated_duration, 60000)
+        self.assertEqual(build.number, 1)
+        self.assertEqual(build.successful, True)
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_get_build_from_summary(self, requests):
+        self.setup_response(requests, self.test_data)
+        summary = BuildSummary(number=1, url="http://example.com/test-job/1")
+        build = summary.get_build()
+        self.assertEqual(build.started, True)
+
 
 if __name__ == '__main__':
     unittest.main()
