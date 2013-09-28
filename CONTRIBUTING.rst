@@ -89,7 +89,8 @@ tests, including testing other Python versions with tox::
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-7. Submit a pull request through the GitHub website.
+7. Submit a pull request through the GitHub website. Please create the pull
+   request against PyJenkins' 'develop' branch.
 
 Pull Request Guidelines
 -----------------------
@@ -103,6 +104,7 @@ Before you submit a pull request, check that it meets these guidelines:
 3. The pull request should work for Python 2.7, and 3.2. Check
    https://travis-ci.org/stylecaster/pyjenkins/pull_requests
    and make sure that the tests pass for all supported Python versions.
+4. The pull request should be against the 'develop' branch.
 
 Tips
 ----
