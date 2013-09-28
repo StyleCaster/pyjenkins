@@ -17,6 +17,10 @@ To use Jenkins in a project::
 	>>> # get a job instance
 	>>> job = jenkins.get_job_by_name('my-project')
 
+	or
+
+	>>> job = jenkins.job_summaries[0].get_job()
+
 	>>> # Trigger a build.
 	>>> # The job must be configured with 'trigger builds remotely'
 	>>> build = job.build('token string')
