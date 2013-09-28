@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json
-from urlparse import urljoin
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
 
 import requests
 
@@ -38,7 +41,7 @@ class Jenkins(object):
     def __init__(self, url, username=None, password=None):
         self._endpoint = _get_json_api_url(url)
         auth = None
-        if username:
+        if username or password:
             if username and password:
                 auth = (username, password)
             else:

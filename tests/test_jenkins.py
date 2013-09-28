@@ -9,8 +9,14 @@ Tests for `pyjenkins` module.
 """
 
 import unittest
+import json
 
-from pyjenkins import jenkins
+try:
+    from mock import patch
+except ImportError:
+    from unittest.mock import patch
+
+from pyjenkins import Jenkins
 from pyjenkins.jenkins import _get_json_api_url
 
 
@@ -32,13 +38,56 @@ class TestGetJsonApiUrl(unittest.TestCase):
             self.assertEqual(expected_output, result, msg)
 
 
-class TestJenkins(unittest.TestCase):
+class RequestMockMixin(object):
+    def setup_response(self, mock, response_data, response_ok=True,
+                       response_status_code=200):
+        """
+        Sets up the desired response from a requests mock object.
+        Currently only supports GET requests.
+
+        ``mock``: A requests mock object
+        ``response_data``: The desired response as a Python dict
+        ``response_ok``: The desired return value of response.ok.
+                         Defaults to True
+        ``response_status_code``: The desired return value of
+                                  response.status_code. Defaults to
+                                  200.
+        """
+        response = mock.get.return_value
+        response.ok = response_ok
+        response.status_code = response_status_code
+        response.text = json.dumps(response_data)
+
+
+class TestJenkins(RequestMockMixin, unittest.TestCase):
 
     def setUp(self):
         pass
 
-    def test_something(self):
-        pass
+    @patch('pyjenkins.jenkins.requests')
+    def test_missing_password(self, requests):
+        with self.assertRaises(AttributeError):
+            jenks = Jenkins("http://example.com", 'username')
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_missing_username(self, requests):
+        with self.assertRaises(AttributeError):
+            jenks = Jenkins('http://example.com', password='password')
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_jenkins_init(self, requests):
+        test_data = {
+            'jobs': [
+                {
+                    'name': 'Test Job One',
+                    'url': 'http://example.com/job1',
+                    'color': 'blue'
+                }
+            ]
+        }
+        self.setup_response(requests, test_data)
+        jenks = Jenkins("http://example.com")
+        self.assertEqual(len(jenks.job_summaries), 1)
 
     def tearDown(self):
         pass
