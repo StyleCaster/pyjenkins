@@ -1,3 +1,7 @@
+.. image:: https://secure.travis-ci.org/StyleCaster/pyjenkins.png?branch=develop
+    :alt: Build Status
+    :target: https://secure.travis-ci.org/StyleCaster/pyjenkins
+
 ===============================
 PyJenkins
 ===============================
