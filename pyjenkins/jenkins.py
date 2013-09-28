@@ -24,9 +24,9 @@ def _get_json_api_url(url):
     """
     Take a Jenkins URL, and return the URL for the JSON API representation.
     """
-    if url[:4] == json:
+    if url[-4:] == 'json':
         return url
-    if url[:1] != "/":
+    if url[-1:] != "/":
         url += "/"
     return urljoin(url, 'api/json')
 
