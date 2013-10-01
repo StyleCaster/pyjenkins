@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='pyjenkins',
-    version='0.1.1',
+    version='0.1.2',
     description='Python wrapper around the Jenkins JSON API',
     long_description=readme + '\n\n' + history,
     author='Chris Lawlor',
