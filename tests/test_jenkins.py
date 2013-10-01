@@ -169,6 +169,17 @@ class TestBuild(RequestMockMixin, unittest.TestCase):
         self.assertEqual(build.started, False)
 
     @patch('pyjenkins.jenkins.requests')
+    def test_build_refresh(self, requests):
+        self.setup_response(requests, {}, response_ok=False,
+                            response_status_code=404)
+        build = Build.get_build('http://example.com/test-job', 1)
+        self.assertEqual(build.started, False)
+        self.setup_response(requests, self.test_data)
+        build.refresh()
+        self.assertEqual(build.started, True)
+        self.assertEqual(build.estimated_duration, 60000)
+
+    @patch('pyjenkins.jenkins.requests')
     def test_get_build_from_summary(self, requests):
         self.setup_response(requests, self.test_data)
         summary = BuildSummary(number=1, url="http://example.com/test-job/1")
