@@ -124,6 +124,19 @@ class TestJob(RequestMockMixin, unittest.TestCase):
         self.assertEqual(len(job.build_summaries), 0)
         self.assertEqual('blue', job.color)
 
+    @patch('pyjenkins.jenkins.requests')
+    def test_list_build_summaries(self, requests):
+        self.test_data['builds'] = [
+            {'url': 'http://example.com/test-job/1', 'number': '1'},
+            {'url': 'http://example.com/test-job/2', 'number': '2'},
+            {'url': 'http://example.com/test-job/3', 'number': '3'},
+        ]
+        self.setup_response(requests, self.test_data)
+        job = Job('http://example.com/test-job')
+        self.assertEqual(len(job.build_summaries), 3)
+        build1 = job.build_summaries[0]
+        self.assertEqual(type(build1), BuildSummary)
+
 
 class TestBuild(RequestMockMixin, unittest.TestCase):
     def setUp(self):
@@ -149,11 +162,56 @@ class TestBuild(RequestMockMixin, unittest.TestCase):
         self.assertEqual(build.successful, True)
 
     @patch('pyjenkins.jenkins.requests')
+    def test_trigger_build_initial_404_response(self, requests):
+        self.setup_response(requests, {}, response_ok=False,
+                            response_status_code=404)
+        build = Build.get_build('http://example.com/test-job', 1)
+        self.assertEqual(build.started, False)
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_build_refresh(self, requests):
+        self.setup_response(requests, {}, response_ok=False,
+                            response_status_code=404)
+        build = Build.get_build('http://example.com/test-job', 1)
+        self.assertEqual(build.started, False)
+        self.setup_response(requests, self.test_data)
+        build.refresh()
+        self.assertEqual(build.started, True)
+        self.assertEqual(build.estimated_duration, 60000)
+
+    @patch('pyjenkins.jenkins.requests')
     def test_get_build_from_summary(self, requests):
         self.setup_response(requests, self.test_data)
         summary = BuildSummary(number=1, url="http://example.com/test-job/1")
         build = summary.get_build()
         self.assertEqual(build.started, True)
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_get_build_with_job_url_ending_in_slash(self, requests):
+        self.setup_response(requests, self.test_data)
+        build = Build.get_build('http://example.com/test-job/', 1)
+        requests.get.assert_called_with(
+            'http://example.com/test-job/1/api/json', auth=None
+        )
+        self.assertTrue(build.started)
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_get_build_with_build_number_as_string(self, requests):
+        self.setup_response(requests, self.test_data)
+        build = Build.get_build('http://example.com/test-job', '1')
+        requests.get.assert_called_with(
+            'http://example.com/test-job/1/api/json', auth=None
+        )
+        self.assertTrue(build.started)
+
+    @patch('pyjenkins.jenkins.requests')
+    def test_get_build_with_build_number_as_string_and_slash_url(self, requests):
+        self.setup_response(requests, self.test_data)
+        build = Build.get_build('http://example.com/test-job/', '1')
+        requests.get.assert_called_with(
+            'http://example.com/test-job/1/api/json', auth=None
+        )
+        self.assertTrue(build.started)
 
 
 if __name__ == '__main__':

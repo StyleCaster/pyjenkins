@@ -16,7 +16,7 @@ class Struct:
         self.__dict__.update(attrs)
 
 
-def _requests_get(url, auth=None):
+def _requests_get_json(url, auth=None):
     r = requests.get(url, auth=auth)
     if not r.ok:
         raise APIError("Jenkins API returned this error: {0}".format(r.reason))
@@ -53,7 +53,7 @@ class Jenkins(object):
         return "<Jenkins {0}>".format(self.url)
 
     def _load_data(self):
-        data = _requests_get(self._endpoint, self._auth)
+        data = _requests_get_json(self._endpoint, self._auth)
         self.job_summaries = [JobSummary(auth=self._auth, **kwargs)
                               for kwargs in data.get('jobs', [])]
 
@@ -121,10 +121,11 @@ class Job(object):
         response = requests.post(trigger_build_url, params={'token': token},
                                  auth=self._auth)
         if response.ok:
-            return Build.get_build(self, self.next_build_number)
+            return Build.get_build(self.url, self.next_build_number,
+                                   auth=self._auth)
 
     def _load_data(self):
-        data = _requests_get(self._endpoint, auth=self._auth)
+        data = _requests_get_json(self._endpoint, auth=self._auth)
         self.description = data.get('description')
         self.name = data.get('displayName')
         self.url = data.get('url')
@@ -176,9 +177,13 @@ class Build(object):
         return "<Build {0}>".format(self.number)
 
     @classmethod
-    def get_build(cls, job, build_number):
-        url = "{0}/{1}".format(job.url, build_number)
-        return cls(url, auth=job._auth)
+    def get_build(cls, job_url, build_number, auth=None):
+        # Make sure job_url ends in a slash, otherwise urljoin
+        # will strip the job name from the url.
+        if job_url[-1:] != '/':
+            job_url += '/'
+        url = urljoin(job_url, str(build_number))
+        return cls(url, auth=auth)
 
     def _get_builds_by_branch_name(self):
         # look for 'buildsByBranchName'

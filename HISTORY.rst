@@ -3,6 +3,15 @@
 History
 -------
 
+0.1.2 (2013-10-01)
++++++
+
+* Build.get_build() now accepts a job url and optional auth kwarg
+  instead of a Job instance.
+* Adds unit tests.
+
+
+
 0.1.1 (2013-09-28)
 ++++++++++++++++++
 
