@@ -33,10 +33,10 @@ test-all:
 	tox
 
 coverage:
-	coverage run --source jenkins setup.py test
+	coverage run --source pyjenkins setup.py test
 	coverage report -m
 	coverage html
-	open htmlcov/index.html
+	@echo "open htmlcov/index.html to view coverage report"
 
 docs:
 	rm -f docs/pyjenkins.rst
