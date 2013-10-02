@@ -1,4 +1,12 @@
+Develop:
+
 .. image:: https://secure.travis-ci.org/StyleCaster/pyjenkins.png?branch=develop
+    :alt: Build Status
+    :target: https://secure.travis-ci.org/StyleCaster/pyjenkins
+
+Master (release branch):
+
+.. image:: https://secure.travis-ci.org/StyleCaster/pyjenkins.png?branch=master
     :alt: Build Status
     :target: https://secure.travis-ci.org/StyleCaster/pyjenkins
 
